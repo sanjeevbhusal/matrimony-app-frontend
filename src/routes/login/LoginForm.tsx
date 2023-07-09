@@ -1,5 +1,4 @@
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -12,29 +11,24 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
-import { API_URL } from "@/lib/constants";
-
-const formSchema = z.object({
-  email: z.string().trim().email("Please enter a valid email address"),
-  password: z.string().trim().min(1, "Please enter Password"),
-});
+import { Link } from "react-router-dom";
+import { useAuthentication } from "@/hooks/useAuthentication";
+import { Login, loginSchema } from "@/lib/schema/loginSchema";
 
 export default function LoginForm() {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<Login>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
 
-  const navigate = useNavigate();
+  const { onLogin } = useAuthentication();
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: Login) => {
     try {
-      await axios.post(`${API_URL}/authentication/login`, values);
-      navigate("/home");
+      await onLogin(values);
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         const errorInfo = err.response?.data;

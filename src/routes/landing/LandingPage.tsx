@@ -1,8 +1,7 @@
 import { Button } from "@/components/ui/button";
 import Logo from "../../assets/Logo.png";
 import HeroImage from "../../assets/hero-image.png";
-
-console.log(window.screen);
+import { Link } from "react-router-dom";
 
 export function LandingPage() {
   return (
@@ -10,12 +9,16 @@ export function LandingPage() {
       <header className="mt-6 flex items-center justify-between">
         <img src={Logo} className="w-32 xl:w-48"></img>
         <div className="flex gap-3">
-          <Button className="border  border-[#CDCDCD] bg-white px-4 text-sm text-black hover:bg-white">
-            Login
-          </Button>
-          <Button className="border border-[#FF0505] bg-white px-4 text-[#FF0505] hover:bg-white">
-            Create Profile
-          </Button>
+          <Link to="/login">
+            <Button className="border  border-[#CDCDCD] bg-white px-4 text-sm text-black hover:bg-white">
+              Login
+            </Button>
+          </Link>
+          <Link to="/signup">
+            <Button className="border border-[#FF0505] bg-white px-4 text-[#FF0505] hover:bg-white">
+              Create Profile
+            </Button>
+          </Link>
         </div>
       </header>
       <main className="mt-20 flex flex-col justify-between gap-8 text-center xl:mt-56 xl:flex-row xl:gap-0 xl:text-start ">

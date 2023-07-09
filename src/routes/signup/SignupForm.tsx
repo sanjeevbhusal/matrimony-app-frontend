@@ -1,5 +1,4 @@
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -13,33 +12,13 @@ import {
   FormDescription,
 } from "@/components/ui/form";
 import axios from "axios";
-import { API_URL } from "@/lib/constants";
 import { Link } from "react-router-dom";
-
-const formSchema = z
-  .object({
-    firstName: z.string().trim().min(1, "Please enter a valid first name"),
-    lastName: z.string().trim().min(1, "Please enter a valid last name"),
-    // .regex(
-    //   new RegExp("^([a-zA-Z]+)\\s([a-zA-Z]+)(?:\\s([a-zA-Z]+))?$"),
-    //   "FullName should be either 2 or 3 words."
-    // ),
-    email: z.string().trim().email("Please enter a valid email address"),
-    password: z
-      .string()
-      .trim()
-      .min(8, "Password must be between 8-20 characters")
-      .max(20, "Password must be between 8-20 characters"),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Confirm Password should match Password",
-    path: ["confirmPassword"],
-  });
+import { useAuthentication } from "@/hooks/useAuthentication";
+import { Signup, signupSchema } from "@/lib/schema/signupschema";
 
 export default function SignupForm() {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<Signup>({
+    resolver: zodResolver(signupSchema),
     defaultValues: {
       firstName: "",
       lastName: "",
@@ -49,10 +28,11 @@ export default function SignupForm() {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const { onSignup } = useAuthentication();
+
+  const onSubmit = async (values: Signup) => {
     try {
-      await axios.post(`${API_URL}/authentication/signup`, values);
-      alert("succesfull signup. Now proceed to login");
+      await onSignup(values);
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         const errors = err.response?.data;
@@ -60,7 +40,7 @@ export default function SignupForm() {
         Object.keys(errors).forEach((field) => {
           const errorMessage = errors[field];
 
-          form.setError(field as keyof (typeof formSchema)["_input"], {
+          form.setError(field as keyof (typeof signupSchema)["_input"], {
             type: "server",
             message: errorMessage,
           });

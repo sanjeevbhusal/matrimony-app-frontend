@@ -1,7 +1,7 @@
 import LoginForm from "./LoginForm";
 import Logo from "../../assets/Logo.png";
 
-export default function LoginPage() {
+export function LoginPage() {
   return (
     <div className="flex min-h-screen w-screen flex-col gap-12 px-4 ">
       <header className="mt-6">

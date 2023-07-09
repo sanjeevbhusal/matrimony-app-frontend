@@ -1,7 +1,7 @@
 import SignupForm from "./SignupForm";
 import Logo from "../../assets/Logo.png";
 
-export default function SignupPage() {
+export function SignupPage() {
   return (
     <div className="flex min-h-screen w-screen flex-col gap-12 border border-green-500 px-4 ">
       <header className="mt-6">

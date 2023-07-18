@@ -11,7 +11,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuthentication } from "@/hooks/useAuth";
 import { Login, loginSchema } from "@/lib/schema/loginSchema";
 
@@ -24,12 +24,15 @@ export default function LoginForm() {
     },
   });
 
+  const navigate = useNavigate();
+
   const { onLogin } = useAuthentication();
 
   const onSubmit = async (values: Login) => {
     try {
       await onLogin(values);
     } catch (err: unknown) {
+      console.log(err);
       if (axios.isAxiosError(err)) {
         const statusCode = err.response?.data.statusCode;
 
@@ -50,6 +53,7 @@ export default function LoginForm() {
             alert("somthing went wrong. Please try again later");
         }
       } else {
+        console.log("yes");
         // handle other errors (eg: network error)
       }
     }

@@ -14,7 +14,6 @@ interface AuthenticationProviderProps {
 }
 
 interface AuthenticationContextType {
-  accessToken?: string;
   user?: User;
   onLogin: (values: Login) => void;
   onSignup: (values: Signup) => void;
@@ -31,7 +30,6 @@ const AuthenticationContext = createContext<AuthenticationContextType | null>(
 function AuthenticationProvider({
   children,
 }: AuthenticationProviderProps): JSX.Element {
-  const [accessToken, setAccessToken] = useState<string>();
   const [user, setUser] = useState<User>();
   const [loadingInitial, setLoadingInitial] = useState<boolean>(true);
 
@@ -39,33 +37,22 @@ function AuthenticationProvider({
   const location = useLocation();
 
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (!token) setLoadingInitial(false);
+    // this is required to send cookies with every request.
+    axios.defaults.withCredentials = true;
 
-    if (token) {
-      setAccessToken(JSON.parse(token));
-
-      const getUser = async () => {
-        try {
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-          const response = await axios.get<User>(
-            `${API_URL}/authentication/get_user_from_token`,
-            {
-              headers: {
-                Authorization: `Bearer ${JSON.parse(token)}`,
-              },
-            }
-          );
-          setUser(response.data);
-        } catch (e) {
-          //
-        } finally {
-          setLoadingInitial(false);
-        }
-      };
-
-      getUser();
-    }
+    const getUser = async () => {
+      try {
+        const response = await axios.get<User>(
+          `${API_URL}/authentication/get_user_from_token`
+        );
+        setUser(response.data);
+      } catch (e) {
+        //
+      } finally {
+        setLoadingInitial(false);
+      }
+    };
+    getUser();
   }, []);
 
   const login = async (values: Login) => {
@@ -74,14 +61,7 @@ function AuthenticationProvider({
       values
     );
 
-    const {
-      user,
-      tokens: { accessToken },
-    } = response.data;
-
-    localStorage.setItem("accessToken", JSON.stringify(accessToken));
-    setAccessToken(accessToken);
-    setUser(user);
+    setUser(response.data);
 
     const origin = location.state?.from?.pathname || "/dashboard";
     navigate(origin);
@@ -93,17 +73,11 @@ function AuthenticationProvider({
       values
     );
 
-    const {
-      user,
-      tokens: { accessToken },
-    } = response.data;
-    localStorage.setItem("accessToken", JSON.stringify(accessToken));
-    setAccessToken(accessToken);
-    setUser(user);
+    setUser(response.data);
     navigate("/onboarding");
   };
 
-  const value = { accessToken, user, onLogin: login, onSignup: signup };
+  const value = { user, onLogin: login, onSignup: signup };
 
   return (
     <AuthenticationContext.Provider value={value}>

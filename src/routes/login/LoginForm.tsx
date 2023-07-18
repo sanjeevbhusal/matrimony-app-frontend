@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/form";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { useAuthentication } from "@/hooks/useAuthentication";
+import { useAuthentication } from "@/hooks/useAuth";
 import { Login, loginSchema } from "@/lib/schema/loginSchema";
 
 export default function LoginForm() {
@@ -31,24 +31,26 @@ export default function LoginForm() {
       await onLogin(values);
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
-        const errorInfo = err.response?.data;
+        const statusCode = err.response?.data.statusCode;
 
-        console.log(errorInfo);
-
-        switch (errorInfo.error) {
-          case "Not Found":
+        switch (statusCode) {
+          case 404:
             form.setError("email", {
               type: "server",
               message: "User with this email doesnot exist",
             });
             break;
-          case "Unauthorized":
+          case 401:
             form.setError("password", {
               type: "server",
-              message: errorInfo.message,
+              message: "Password is invalid",
             });
+            break;
+          default:
+            alert("somthing went wrong. Please try again later");
         }
-        return;
+      } else {
+        // handle other errors (eg: network error)
       }
     }
   };
@@ -68,7 +70,7 @@ export default function LoginForm() {
               <FormMessage />
             </FormItem>
           )}
-        ></FormField>
+        />
         <FormField
           control={form.control}
           name="password"
@@ -97,12 +99,19 @@ export default function LoginForm() {
             Login
           </Button>
         </div>
-        <Link to="/signup">
-          <h1 className="mt-8 text-sm">
-            New to Everlasting Ties?
+
+        <h1 className="mt-8 text-sm">
+          New to Everlasting Ties?
+          <Link to="/signup">
             <span className=" ml-2 text-blue-600">Create an account.</span>
-          </h1>
-        </Link>
+          </Link>
+        </h1>
+        <h1 className="mt-2 text-sm">
+          Forgot your password?
+          <Link to="/forgot-password">
+            <span className=" ml-2 text-blue-600">Reset Password</span>
+          </Link>
+        </h1>
       </form>
     </Form>
   );

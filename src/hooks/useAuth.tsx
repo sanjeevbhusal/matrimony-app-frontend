@@ -1,8 +1,7 @@
 import { AuthenticationContext } from "@/context/authenticationContext";
-import { AuthenticationContextType } from "@/@types/authentication";
 import { useContext } from "react";
 
-export function useAuthentication(): AuthenticationContextType {
+export function useAuthentication() {
   const context = useContext(AuthenticationContext);
 
   if (!context) {

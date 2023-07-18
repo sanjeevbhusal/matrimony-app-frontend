@@ -13,8 +13,9 @@ import {
 } from "@/components/ui/form";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { useAuthentication } from "@/hooks/useAuthentication";
+import { useAuthentication } from "@/hooks/useAuth";
 import { Signup, signupSchema } from "@/lib/schema/signupschema";
+import { useState } from "react";
 
 export default function SignupForm() {
   const form = useForm<Signup>({
@@ -29,27 +30,33 @@ export default function SignupForm() {
   });
 
   const { onSignup } = useAuthentication();
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = async (values: Signup) => {
+    setLoading(true);
+
     try {
       await onSignup(values);
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
-        const errors = err.response?.data;
+        const statusCode = err.response?.data.statusCode;
 
-        Object.keys(errors).forEach((field) => {
-          const errorMessage = errors[field];
-
-          form.setError(field as keyof (typeof signupSchema)["_input"], {
-            type: "server",
-            message: errorMessage,
-          });
-        });
-
-        return;
+        switch (statusCode) {
+          case 409:
+            form.setError("email", {
+              type: "server",
+              message:
+                "This Email is already in use. Please use a different email.",
+            });
+            break;
+          default:
+            alert("somthing went wrong. Please try again later");
+        }
+      } else {
+        // handle other errors (eg: network error)
       }
-
-      console.log(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -128,6 +135,7 @@ export default function SignupForm() {
           <Button
             type="submit"
             className="border border-red-500 bg-white text-red-500 hover:bg-white"
+            disabled={loading}
           >
             Create Account
           </Button>

@@ -1,7 +1,7 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { SignupSchema } from "../schema/signupschema";
 import { API_URL } from "../constants";
 import axios from "axios";
@@ -21,10 +21,31 @@ const AuthContext = createContext<AuthContext | null>(null);
 function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<null | User>(null);
 
+  useEffect(() => {
+    async function fetchUser() {
+      try {
+        const response = await axios.get(
+          `${API_URL}/authentication/current-user`,
+          {
+            withCredentials: true,
+          }
+        );
+        setUser(response.data);
+      } catch (error) {}
+    }
+
+    fetchUser();
+  }, []);
+
+  console.log(user);
+
   async function signup(values: SignupSchema) {
     const response = await axios.post(
       `${API_URL}/authentication/signup`,
-      values
+      values,
+      {
+        withCredentials: true,
+      }
     );
     const user = UserSchema.parse(response.data);
     setUser(user);
@@ -33,9 +54,13 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
   async function login(values: SignupSchema) {
     const response = await axios.post(
       `${API_URL}/authentication/login`,
-      values
+      values,
+      {
+        withCredentials: true,
+      }
     );
     const user = UserSchema.parse(response.data);
+    console.log("==>", user);
     setUser(user);
   }
 

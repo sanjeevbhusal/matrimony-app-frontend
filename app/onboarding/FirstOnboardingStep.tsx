@@ -3,6 +3,10 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 // import { useAuthentication } from "@/hooks/useAuth";
 import { useMutation } from "@tanstack/react-query";
+import { UserInterest, UserInterestWithLabel } from "@/lib/types";
+import { useAuth } from "@/lib/providers/AuthProvider";
+import axios from "axios";
+import { API_URL } from "@/lib/constants";
 // import { updateUser } from "@/api/user";
 // import { UserInterest, UserInterestWithLabel } from "@/types";
 
@@ -33,7 +37,10 @@ export function FirstOnboardingStep({ onSuccess }: { onSuccess: () => void }) {
   const [interests, setInterests] = useState<UserInterestWithLabel[]>([]);
   const [error, setError] = useState<string>();
 
-  const { user } = useAuthentication();
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(false);
+
+  console.log(user);
 
   useEffect(() => {
     if (user) {
@@ -43,10 +50,6 @@ export function FirstOnboardingStep({ onSuccess }: { onSuccess: () => void }) {
       setInterests(existingInterests);
     }
   }, [user]);
-
-  const updateUserMutation = useMutation(updateUser, {
-    onSuccess,
-  });
 
   const handleSubmit = async () => {
     if (interests.length < 5) {
@@ -64,12 +67,17 @@ export function FirstOnboardingStep({ onSuccess }: { onSuccess: () => void }) {
       return;
     }
 
-    updateUserMutation.mutate({
-      updatedProperties: {
+    try {
+      setLoading(true);
+      await axios.patch(`${API_URL}/users/${user?.id}`, {
         interests: interests.map((interest) => interest.value),
-      },
-      userId: user?.id as number,
-    });
+      });
+      onSuccess();
+    } catch (error) {
+      alert("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleInterestChange = (updatedInterests: UserInterestWithLabel[]) => {
@@ -104,7 +112,7 @@ export function FirstOnboardingStep({ onSuccess }: { onSuccess: () => void }) {
           className="text-md ml-auto mt-4 block bg-red-500  text-sm hover:bg-red-500"
           size={"sm"}
           onClick={handleSubmit}
-          disabled={updateUserMutation.isLoading}
+          disabled={loading}
         >
           Next
         </Button>

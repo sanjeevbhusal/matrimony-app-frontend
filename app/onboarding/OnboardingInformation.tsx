@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/lib/providers/AuthProvider";
 // import { useAuthentication } from "@/hooks/useAuth";
 
 export function OnboardingInformation({ onStart }: { onStart: () => void }) {
-  // const { user } = useAuthentication();
+  const { user } = useAuth();
 
   return (
     <main className="mx-auto border-red-500 xl:w-[50rem]">
@@ -31,17 +32,18 @@ export function OnboardingInformation({ onStart }: { onStart: () => void }) {
           </li>
           <li>
             You can always edit your answer from the accounts section. So,
-            although you should answer these question hoenstly, don't stress too
+            {/* eslint-disable-next-line react/no-unescaped-entities */}
+            although you should answer these question honestly, don't stress too
             much to give the perfect answer. You can always edit it.
           </li>
         </ul>
       </div>
-      {/* {user !== undefined && user.interests.length > 0 ? (
+      {user !== null && user.interests.length > 0 ? (
         <h1 className="mt-4 rounded-md bg-blue-200 px-8 py-4 text-sm font-medium text-gray-700">
           You have already answered some of the questions previously. All your
           answers have been saved.
         </h1>
-      ) : null} */}
+      ) : null}
       <Button
         className="text-md ml-auto mt-4 block bg-red-500  hover:bg-red-500"
         onClick={onStart}

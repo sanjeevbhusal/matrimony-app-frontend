@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useAuthentication } from "@/hooks/useAuth";
 import { Textarea } from "@/components/ui/textarea";
-import { updateUser } from "@/api/user";
 import { useMutation } from "@tanstack/react-query";
+import { useAuth } from "@/lib/providers/AuthProvider";
+import axios from "axios";
+import { API_URL } from "@/lib/constants";
 
 export function SecondOnboardingStep({ onSuccess }: { onSuccess: () => void }) {
   const [bio, setBio] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const { user } = useAuthentication();
+  const { user } = useAuth();
 
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     if (user) {
       const existingBio = user.bio;
@@ -19,10 +21,6 @@ export function SecondOnboardingStep({ onSuccess }: { onSuccess: () => void }) {
       }
     }
   }, [user]);
-
-  const updateUserMutation = useMutation(updateUser, {
-    onSuccess,
-  });
 
   const handleSubmit = async () => {
     if (bio.length < 50) {
@@ -35,10 +33,17 @@ export function SecondOnboardingStep({ onSuccess }: { onSuccess: () => void }) {
       return;
     }
 
-    updateUserMutation.mutate({
-      updatedProperties: { bio: bio.trim() },
-      userId: user?.id as number,
-    });
+    try {
+      setLoading(true);
+      await axios.patch(`${API_URL}/users/${user?.id}`, {
+        bio: bio.trim(),
+      });
+      onSuccess();
+    } catch (error) {
+      alert("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleBioChange = (updatedBio: string) => {
@@ -70,7 +75,7 @@ export function SecondOnboardingStep({ onSuccess }: { onSuccess: () => void }) {
         className="text-md ml-auto mt-4 block bg-red-500  text-sm hover:bg-red-500"
         size={"sm"}
         onClick={handleSubmit}
-        disabled={updateUserMutation.isLoading}
+        disabled={loading}
       >
         Next
       </Button>

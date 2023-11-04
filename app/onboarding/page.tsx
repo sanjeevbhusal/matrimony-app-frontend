@@ -2,10 +2,10 @@
 
 import Logo from "@/public/images/Logo.png";
 import { FirstOnboardingStep } from "./FirstOnboardingStep";
-// import { SecondOnboardingStep } from "./SecondOnboardingStep";
+import { SecondOnboardingStep } from "./SecondOnboardingStep";
 import { OnboardingInformation } from "./OnboardingInformation";
 import { useState } from "react";
-// import { ThirdOnboardingStep } from "./ThirdOnboardingStep";
+import { ThirdOnboardingStep } from "./ThirdOnboardingStep";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
@@ -21,12 +21,13 @@ export default function Page() {
   }
 
   if (onboardingStep === 2) {
-    // content = <SecondOnboardingStep onSuccess={() => setOnboardingStep(3)} />;
-    content = <div>Second step</div>;
+    content = <SecondOnboardingStep onSuccess={() => setOnboardingStep(3)} />;
   }
 
   if (onboardingStep === 3) {
-    // content = <ThirdOnboardingStep onSuccess={() => navigate("/dashboard")} />;
+    content = (
+      <ThirdOnboardingStep onSuccess={() => router.push("/dashboard")} />
+    );
   }
 
   return (

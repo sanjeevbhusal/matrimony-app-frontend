@@ -1,4 +1,3 @@
-import { updateUser } from "@/api/user";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -9,13 +8,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useAuthentication } from "@/hooks/useAuth";
+import { API_URL } from "@/lib/constants";
+import { useAuth } from "@/lib/providers/AuthProvider";
 import {
   thirdOnboardingStepSchema,
   ThirdOnboardingStepSchema,
 } from "@/lib/schema/ThirdOnboardingStepSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
@@ -30,9 +30,7 @@ function ThirdOnboardingStep({ onSuccess }: { onSuccess: () => void }) {
     },
   });
 
-  const { user } = useAuthentication();
-
-  const queryClient = useQueryClient();
+  const { user, fetchUser } = useAuth();
 
   useEffect(() => {
     if (user) {
@@ -54,13 +52,17 @@ function ThirdOnboardingStep({ onSuccess }: { onSuccess: () => void }) {
     }
   }, [user, form]);
 
-  const updateUserMutation = useMutation(updateUser, {
-    onSuccess: () => {
-      // We should now redirect user to dashboard page. That is only possible if we have all the values in User object. The values are available at server but not on client. Hence, refetching.
-      queryClient.invalidateQueries(["user"]);
+  async function onSubmit(values: ThirdOnboardingStepSchema) {
+    try {
+      await axios.patch(`${API_URL}/users/${user?.id}`, values);
+      // refetch the user again
+      await fetchUser();
       onSuccess();
-    },
-  });
+    } catch (error) {
+      alert("Something went wrong");
+    } finally {
+    }
+  }
 
   return (
     <main className="mx-auto border-red-500 xl:w-[35rem]">
@@ -70,14 +72,7 @@ function ThirdOnboardingStep({ onSuccess }: { onSuccess: () => void }) {
 
       <div className="mt-8 rounded-lg border border-[#CFCFCF] px-10 py-4">
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit((values) =>
-              updateUserMutation.mutate({
-                updatedProperties: values,
-                userId: user?.id as number,
-              })
-            )}
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
               control={form.control}
               name="age"
@@ -138,7 +133,7 @@ function ThirdOnboardingStep({ onSuccess }: { onSuccess: () => void }) {
               <Button
                 type="submit"
                 className="border border-red-500 bg-white text-red-500 hover:bg-white"
-                disabled={updateUserMutation.isLoading}
+                disabled={form.formState.isSubmitting}
               >
                 Complete Registration
               </Button>

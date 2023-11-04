@@ -12,6 +12,7 @@ import { LoginSchema } from "../schema/loginSchema";
 
 interface AuthContext {
   user: User | null;
+  fetchUser: () => Promise<void>;
   signup: (values: SignupSchema) => Promise<void>;
   login: (values: LoginSchema) => Promise<void>;
 }
@@ -20,24 +21,26 @@ const AuthContext = createContext<AuthContext | null>(null);
 
 function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<null | User>(null);
+  const [fetchedUserAtLoad, setFetchedUserAtLoad] = useState(false);
 
   useEffect(() => {
-    async function fetchUser() {
-      try {
-        const response = await axios.get(
-          `${API_URL}/authentication/current-user`,
-          {
-            withCredentials: true,
-          }
-        );
-        setUser(response.data);
-      } catch (error) {}
-    }
-
     fetchUser();
   }, []);
 
-  console.log(user);
+  async function fetchUser() {
+    try {
+      const response = await axios.get(
+        `${API_URL}/authentication/current-user`,
+        {
+          withCredentials: true,
+        }
+      );
+      setUser(response.data);
+    } catch (error) {
+    } finally {
+      setFetchedUserAtLoad(true);
+    }
+  }
 
   async function signup(values: SignupSchema) {
     const response = await axios.post(
@@ -66,9 +69,14 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const value = {
     user,
+    fetchUser,
     signup,
     login,
   };
+
+  if (!fetchedUserAtLoad) {
+    return <h1>Loading....</h1>;
+  }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

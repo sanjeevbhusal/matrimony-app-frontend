@@ -12,18 +12,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import Link from "next/link";
 import { LoginSchema, loginSchema } from "@/lib/schema/loginSchema";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-// import { login } from "@/api/auth";
-// import { User } from "@/types";
+import { useState } from "react";
+import { useAuth } from "@/lib/providers/AuthProvider";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function LoginForm() {
-  // const queryClient = useQueryClient();
-  // const location = useLocation();
-  // const navigate = useNavigate();
-
   const form = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -32,43 +28,45 @@ export default function LoginForm() {
     },
   });
 
-  // const loginMutation = useMutation(login, {
-  //   onSuccess: (data: User) => {
-  //     queryClient.setQueryData(["user"], data);
-  //     const origin = location.state?.from?.pathname || "/dashboard";
-  //     navigate(origin);
-  //   },
-  //   onError: (error: unknown) => {
-  //     if (axios.isAxiosError(error)) {
-  //       const statusCode = error.response?.data.statusCode;
+  const { login } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  //       switch (statusCode) {
-  //         case 404:
-  //           form.setError("email", {
-  //             type: "server",
-  //             message: "User with this email doesnot exist",
-  //           });
-  //           break;
-  //         case 401:
-  //           form.setError("password", {
-  //             type: "server",
-  //             message: "Password is invalid",
-  //           });
-  //           break;
-  //         default:
-  //           alert("somthing went wrong. Please try again later");
-  //       }
-  //     } else {
-  //       // handle other errors (eg: network error)
-  //     }
-  //   },
-  // });
+  async function onSubmit(values: LoginSchema) {
+    try {
+      setLoading(true);
+      await login(values);
+      const origin = searchParams.get("from") || "/dashboard";
+      router.push(origin);
+    } catch (e) {
+      const error = e as AxiosError<any, any>;
+
+      const statusCode = error.response?.data.statusCode;
+      switch (statusCode) {
+        case 404:
+          form.setError("email", {
+            type: "server",
+            message: "User with this email doesnot exist",
+          });
+          break;
+        case 401:
+          form.setError("password", {
+            type: "server",
+            message: "Password is invalid",
+          });
+          break;
+        default:
+          alert("something went wrong. Please try again later");
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit((values) => loginMutation.mutate(values))}
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
           name="email"
@@ -103,7 +101,7 @@ export default function LoginForm() {
           <Button
             type="submit"
             className="border border-red-500 bg-white text-red-500 hover:bg-white"
-            // disabled={loginMutation.isLoading}
+            disabled={loading}
           >
             Login
           </Button>

@@ -13,18 +13,17 @@ import {
   FormMessage,
   FormDescription,
 } from "@/components/ui/form";
-import axios from "axios";
-// import { Link, useNavigate } from "react-router-dom";
+import axios, { AxiosError } from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { SignupSchema, signupSchema } from "@/lib/schema/signupschema";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { API_URL } from "@/lib/constants";
+import { UserSchema } from "@/lib/schema/UserSchema";
+import { useAuth } from "@/lib/providers/AuthProvider";
+import { useState } from "react";
 // import { signup } from "@/api/auth";
 
 export default function SignupForm() {
-  // const queryClient = useQueryClient();
-  const router = useRouter();
-
   const form = useForm<SignupSchema>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -35,38 +34,38 @@ export default function SignupForm() {
       confirmPassword: "",
     },
   });
+  const { signup } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-  // const signupMutation = useMutation(signup, {
-  //   onSuccess: (data: User) => {
-  //     queryClient.setQueryData(["user"], data);
-  //     navigate("/onboarding");
-  //   },
-  //   onError: (error: unknown) => {
-  //     if (axios.isAxiosError(error)) {
-  //       const statusCode = error.response?.data.statusCode;
+  async function onSubmit(values: SignupSchema) {
+    try {
+      setLoading(true);
+      await signup(values);
+      router.push("/onboarding");
+    } catch (e) {
+      const error = e as AxiosError<any, any>;
 
-  //       switch (statusCode) {
-  //         case 409:
-  //           form.setError("email", {
-  //             type: "server",
-  //             message:
-  //               "This Email is already in use. Please use a different email.",
-  //           });
-  //           break;
-  //         default:
-  //           alert("somthing went wrong. Please try again later");
-  //       }
-  //     } else {
-  //       // handle other errors (eg: network error)
-  //     }
-  //   },
-  // });
+      const statusCode = error.response?.data.statusCode;
+      switch (statusCode) {
+        case 409:
+          form.setError("email", {
+            type: "server",
+            message:
+              "This Email is already in use. Please use a different email.",
+          });
+          break;
+        default:
+          alert("Something went wrong. Please try again later");
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit((values) => signupMutation.mutate(values))}
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
           name="firstName"
@@ -139,7 +138,7 @@ export default function SignupForm() {
           <Button
             type="submit"
             className="border border-red-500 bg-white text-red-500 hover:bg-white"
-            // disabled={signupMutation.isLoading}
+            disabled={loading}
           >
             Create Account
           </Button>

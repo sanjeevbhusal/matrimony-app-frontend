@@ -6,13 +6,44 @@ import { SecondOnboardingStep } from "./SecondOnboardingStep";
 import { OnboardingInformation } from "./OnboardingInformation";
 import { useState } from "react";
 import { ThirdOnboardingStep } from "./ThirdOnboardingStep";
-import { useRouter } from "next/navigation";
+import { redirect, usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
+import { useAuth } from "@/lib/providers/AuthProvider";
 
 export default function Page() {
+  // you cannot come to onboarding if you already have completed the flow or if user doesnot exists.
+  const { user } = useAuth();
+  const [onboardingStep, setOnboardingStep] = useState(0);
+
+  const pathname = usePathname();
   const router = useRouter();
 
-  const [onboardingStep, setOnboardingStep] = useState(0);
+  if (!user) {
+    return redirect(`/login?from=${pathname}`);
+  }
+
+  const {
+    bio,
+    interests,
+    currentAddress,
+    age,
+    currentProfession,
+    highestEducation,
+  } = user;
+
+  const onboardingCompleted = !!(
+    bio &&
+    currentAddress &&
+    age &&
+    currentProfession &&
+    highestEducation &&
+    interests.length > 0
+  );
+
+  // If the user has competed onboarding, they should be redirected to dashboard"
+  if (onboardingCompleted) {
+    return redirect(`/dashboard`);
+  }
 
   let content = <OnboardingInformation onStart={() => setOnboardingStep(1)} />;
 

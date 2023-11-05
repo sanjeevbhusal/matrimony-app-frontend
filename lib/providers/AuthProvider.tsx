@@ -15,6 +15,7 @@ interface AuthContext {
   fetchUser: () => Promise<void>;
   signup: (values: SignupSchema) => Promise<void>;
   login: (values: LoginSchema) => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContext | null>(null);
@@ -63,8 +64,14 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     );
     const user = UserSchema.parse(response.data);
-    console.log("==>", user);
     setUser(user);
+  }
+
+  async function logout() {
+    await axios.post(`${API_URL}/authentication/logout`, {
+      withCredentials: true,
+    });
+    setUser(null);
   }
 
   const value = {
@@ -72,6 +79,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     fetchUser,
     signup,
     login,
+    logout,
   };
 
   if (!fetchedUserAtLoad) {

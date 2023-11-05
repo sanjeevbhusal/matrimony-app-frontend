@@ -29,16 +29,16 @@ export default function LoginForm() {
   });
 
   const { login } = useAuth();
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [loading, setLoading] = useState(false);
 
   async function onSubmit(values: LoginSchema) {
     try {
       setLoading(true);
       await login(values);
       const origin = searchParams.get("from") || "/dashboard";
-      router.push(origin);
+      // router.push(origin);
     } catch (e) {
       const error = e as AxiosError<any, any>;
 

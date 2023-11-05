@@ -6,14 +6,23 @@
 //   );
 // }
 
+"use client";
+
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/lib/providers/AuthProvider";
 import Logo from "@/public/images/Logo.png";
 import HeroImage from "@/public/images/hero-image.png";
 import Image from "next/image";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export default function Page() {
-  console.log(Logo, HeroImage);
+  const { user } = useAuth();
+
+  if (user) {
+    return redirect("/dashboard");
+  }
+
   return (
     <div className="mx-4 xl:mx-[7%]">
       <header className="mt-6 flex items-center justify-between">

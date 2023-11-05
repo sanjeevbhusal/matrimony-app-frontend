@@ -1,5 +1,6 @@
 import { API_URL } from "@/lib/constants";
 import { User } from "@/lib/types";
+import { getCapitalizedString, getUserFullName } from "@/lib/utils";
 import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
@@ -7,41 +8,6 @@ import Link from "next/link";
 async function Dashboard() {
   const response = await axios.get(`${API_URL}/users`);
   const users = response.data as User[];
-
-  739;
-
-  691;
-
-  228;
-
-  243;
-  235;
-
-  // gap - 16 + 16 + 16 + 16 = 64 px
-
-  function getUserFullName(firstName: string, lastName: string) {
-    return (
-      firstName[0].toUpperCase() +
-      firstName.slice(1) +
-      " " +
-      lastName[0].toUpperCase() +
-      lastName.slice(1)
-    );
-  }
-
-  function getCapitalizedString(text: string) {
-    if (text.length === 0) return text;
-    return text[0].toUpperCase() + text.slice(1);
-  }
-
-  function getFormattedInterests(interests: string[]) {
-    return interests.map((interest, index) => (
-      <p key={interest}>
-        {interest}
-        {index + 1 !== interests.length ? "," : ""}
-      </p>
-    ));
-  }
 
   return (
     <div className="flex gap-6 flex-wrap">

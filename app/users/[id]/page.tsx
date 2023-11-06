@@ -4,11 +4,18 @@ import { User } from "@/lib/types";
 import { getCapitalizedString, getUserFullName } from "@/lib/utils";
 import axios from "axios";
 import { FaBirthdayCake } from "react-icons/fa";
-import { BsPersonWorkspace, BsChatDots } from "react-icons/bs";
+import {
+  BsPersonWorkspace,
+  BsChatDots,
+  BsFacebook,
+  BsInstagram,
+  BsPeopleFill,
+} from "react-icons/bs";
 import { IoSchoolSharp } from "react-icons/io5";
 import { HiOutlineLocationMarker } from "react-icons/hi";
 import { MdOutlineInterests } from "react-icons/md";
 import Image from "next/image";
+import Link from "next/link";
 
 interface Props {
   params: {
@@ -19,6 +26,8 @@ interface Props {
 export default async function Page({ params }: Props) {
   const response = await axios.get(`${API_URL}/users/${params.id}`);
   const user = response.data as User;
+
+  console.log(user);
 
   return (
     <main className="min-h-screen flex flex-col px-6 md:px-10 lg:px-16 border-red-500">
@@ -68,8 +77,27 @@ export default async function Page({ params }: Props) {
             <BsChatDots /> Here is a little bit about me:
           </div>
 
-          {getCapitalizedString(user.bio || "")}
+          <h1 className="border p-2">{getCapitalizedString(user.bio || "")}</h1>
         </div>
+      </div>
+      <div className="flex gap-2 mt-4">
+        <h1 className="font-semibold">Social Links:</h1>
+        {!user.facebookUrl && !user.instagramUrl ? (
+          <p>No social links provided.</p>
+        ) : (
+          <div className="flex gap-4">
+            {user.facebookUrl ? (
+              <Link href={user.facebookUrl}>
+                <BsFacebook size={20} />
+              </Link>
+            ) : null}
+            {user.instagramUrl ? (
+              <Link href={user.instagramUrl}>
+                <BsInstagram size={20} />
+              </Link>
+            ) : null}
+          </div>
+        )}
       </div>
     </main>
   );

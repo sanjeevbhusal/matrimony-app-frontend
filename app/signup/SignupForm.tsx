@@ -19,8 +19,8 @@ import { useRouter } from "next/navigation";
 import { SignupSchema, signupSchema } from "@/lib/schema/signupschema";
 import { API_URL } from "@/lib/constants";
 import { UserSchema } from "@/lib/schema/UserSchema";
-import { useAuth } from "@/lib/providers/AuthProvider";
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 // import { signup } from "@/api/auth";
 
 export default function SignupForm() {

@@ -42,7 +42,7 @@ export default function Page() {
 
   // If the user has competed onboarding, they should be redirected to dashboard"
   if (onboardingCompleted) {
-    return redirect(`/dashboard`);
+    return redirect(`/home`);
   }
 
   let content = <OnboardingInformation onStart={() => setOnboardingStep(1)} />;
@@ -56,9 +56,7 @@ export default function Page() {
   }
 
   if (onboardingStep === 3) {
-    content = (
-      <ThirdOnboardingStep onSuccess={() => router.push("/dashboard")} />
-    );
+    content = <ThirdOnboardingStep onSuccess={() => router.push("/home")} />;
   }
 
   return (

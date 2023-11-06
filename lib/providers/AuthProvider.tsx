@@ -9,6 +9,7 @@ import { UserSchema } from "../schema/UserSchema";
 import { z } from "zod";
 import { User } from "../types";
 import { LoginSchema } from "../schema/loginSchema";
+import { Loader2 } from "lucide-react";
 
 interface AuthContext {
   user: User | null;
@@ -55,7 +56,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(user);
   }
 
-  async function login(values: SignupSchema) {
+  async function login(values: LoginSchema) {
     const response = await axios.post(
       `${API_URL}/authentication/login`,
       values,
@@ -83,20 +84,11 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   if (!fetchedUserAtLoad) {
-    return <h1>Loading....</h1>;
+    return null;
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export default AuthProvider;
-
-function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth should only be used within AuthProvider");
-  }
-  return context;
-}
-
-export { useAuth };
+export { AuthContext as Context };

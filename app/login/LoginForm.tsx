@@ -16,8 +16,8 @@ import axios, { AxiosError } from "axios";
 import Link from "next/link";
 import { LoginSchema, loginSchema } from "@/lib/schema/loginSchema";
 import { useState } from "react";
-import { useAuth } from "@/lib/providers/AuthProvider";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function LoginForm() {
   const form = useForm<LoginSchema>({

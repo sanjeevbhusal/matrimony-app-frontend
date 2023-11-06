@@ -1,12 +1,16 @@
-"use client";
-
-import { useAuth } from "@/lib/providers/AuthProvider";
+import getServerSession from "@/actions/getServerSession";
 import { redirect } from "next/navigation";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
+export default async function Layout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const user = await getServerSession();
+
   if (user) {
-    return redirect("/dashboard");
+    return redirect("/home");
   }
+
   return children;
 }

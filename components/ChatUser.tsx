@@ -7,16 +7,17 @@ import { getUserFullName } from "@/lib/utils";
 
 interface ChatUserProps {
   user: User;
+  chatId: string;
 }
 
-function ChatUser({ user }: ChatUserProps) {
+function ChatUser({ user, chatId }: ChatUserProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathName = usePathname();
 
-  function onUserClick(user: User) {
+  function onUserClick() {
     const params = new URLSearchParams(searchParams);
-    params.set("userId", user.id);
+    params.set("chatId", chatId);
 
     router.push(`${pathName}?${params.toString()}`);
   }
@@ -24,7 +25,7 @@ function ChatUser({ user }: ChatUserProps) {
   return (
     <div
       className="flex p-2 hover:bg-gray-200 gap-2 items-center cursor-pointer"
-      onClick={() => onUserClick(user)}
+      onClick={onUserClick}
     >
       <Image
         src="https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"

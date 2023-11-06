@@ -1,3 +1,6 @@
+import getChatProfiles from "@/actions/getChatProfiles";
+import getServerSession from "@/actions/getServerSession";
+import ChatScreen from "@/components/ChatScreen";
 import ChatUser from "@/components/ChatUser";
 import NavBar from "@/components/NavBar";
 import { API_URL } from "@/lib/constants";
@@ -8,40 +11,35 @@ import { cookies } from "next/headers";
 
 interface PageProps {
   searchParams: {
-    userId: string;
+    chatId: string;
   };
 }
 
+// get Users who have had conversations with the current user.
+
 export default async function Page({ searchParams }: PageProps) {
-  const response = await axios.get(`${API_URL}/users`);
-  const users = response.data as User[];
-  const userId = searchParams.userId;
+  // const response = await axios.get(`${API_URL}/users`);
+  // const users = response.data as User[];
+  // const userId = searchParams.userId;
+  const user = await getServerSession();
+  const chatProfiles = await getChatProfiles();
+  console.log(chatProfiles);
 
-  const r = await axios.get(
-    `${API_URL}/authentication/current-user?route=chat`,
-    {
-      headers: {
-        Cookie: `userId=${cookies().get("userId")?.value};`,
-      },
-    }
-  );
-  const currentUser = r.data as User;
-  const chats = currentUser.chats as ChatWithUsers[];
-
-  console.log(chats.map((chat) => <div>{chat.users}</div>));
+  // const r = await axios.get(
+  //   `${API_URL}/authentication/current-user?route=chat`,
+  //   {
+  //     headers: {
+  //       Cookie: `userId=${cookies().get("userId")?.value};`,
+  //     },
+  //   }
+  // );
+  // const currentUser = r.data as User;
+  // const chats = currentUser.chats as ;
 
   // I want to see what are the chats the user has been involved in.,
 
-  let conversations = [];
-
-  if (userId) {
-    const response = await axios.get(`${API_URL}/chat?userId=${userId}`);
-    conversations = response.data;
-  }
-
-  // people whom with you have had conversations.
-
-  console.log(conversations);
+  // users = ["dfjkasdfa", "dfkajdslsadf"]
+  // one of them is you. you could be anyone of them.
 
   return (
     <main className="min-h-screen flex flex-col  border-red-500">
@@ -49,12 +47,16 @@ export default async function Page({ searchParams }: PageProps) {
       <NavBar />
       <div className="mt-16 flex grow">
         <div className="border-r flex flex-col gap-2 px-2">
-          {users.map((user) => (
-            <ChatUser key={user.id} user={user} />
+          {chatProfiles.map((chat) => (
+            <ChatUser
+              key={chat.id}
+              user={chat.users.find((u) => u.id !== user?.id) as User}
+              chatId={chat.id}
+            />
           ))}
         </div>
-        <div> Chat with the person</div>
       </div>
+      <ChatScreen chatId={searchParams.chatId} />
     </main>
   );
 }

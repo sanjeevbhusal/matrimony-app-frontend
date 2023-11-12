@@ -8,7 +8,7 @@ import { useState } from "react";
 import { ThirdOnboardingStep } from "./ThirdOnboardingStep";
 import { redirect, usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
-import { useAuth } from "@/lib/providers/AuthProvider";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Page() {
   // you cannot come to onboarding if you already have completed the flow or if user doesnot exists.

@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 // import { useAuthentication } from "@/hooks/useAuth";
 import { useMutation } from "@tanstack/react-query";
 import { UserInterest, UserInterestWithLabel } from "@/lib/types";
-import { useAuth } from "@/lib/providers/AuthProvider";
 import axios from "axios";
 import { API_URL } from "@/lib/constants";
+import { useAuth } from "@/hooks/useAuth";
 // import { updateUser } from "@/api/user";
 // import { UserInterest, UserInterestWithLabel } from "@/types";
 

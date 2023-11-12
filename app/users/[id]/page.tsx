@@ -16,6 +16,7 @@ import { HiOutlineLocationMarker } from "react-icons/hi";
 import { MdOutlineInterests } from "react-icons/md";
 import Image from "next/image";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   params: {
@@ -99,6 +100,9 @@ export default async function Page({ params }: Props) {
           </div>
         )}
       </div>
+      <Link href={`/chat/?userId=${user.id}`}>
+        <Button className="w-fit mt-2">Chat With {user.firstName}</Button>
+      </Link>
     </main>
   );
 }

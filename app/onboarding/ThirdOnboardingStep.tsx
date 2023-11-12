@@ -8,8 +8,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/hooks/useAuth";
 import { API_URL } from "@/lib/constants";
-import { useAuth } from "@/lib/providers/AuthProvider";
 import {
   thirdOnboardingStepSchema,
   ThirdOnboardingStepSchema,

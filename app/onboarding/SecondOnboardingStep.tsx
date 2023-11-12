@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useMutation } from "@tanstack/react-query";
-import { useAuth } from "@/lib/providers/AuthProvider";
 import axios from "axios";
 import { API_URL } from "@/lib/constants";
+import { useAuth } from "@/hooks/useAuth";
 
 export function SecondOnboardingStep({ onSuccess }: { onSuccess: () => void }) {
   const [bio, setBio] = useState("");

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/lib/providers/AuthProvider";
+import { useAuth } from "@/hooks/useAuth";
 // import { useAuthentication } from "@/hooks/useAuth";
 
 export function OnboardingInformation({ onStart }: { onStart: () => void }) {

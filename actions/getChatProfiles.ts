@@ -7,6 +7,7 @@ import { cookies } from "next/headers";
 
 async function getChatProfiles() {
   const user = getServerSession();
+
   if (!user) {
     throw new Error("User not found");
   }

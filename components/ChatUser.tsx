@@ -3,7 +3,7 @@
 import { User } from "@/lib/types";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { getUserFullName } from "@/lib/utils";
+import { cn, getUserFullName } from "@/lib/utils";
 
 interface ChatUserProps {
   user: User;
@@ -22,9 +22,16 @@ function ChatUser({ user, chatId }: ChatUserProps) {
     router.push(`${pathName}?${params.toString()}`);
   }
 
+  const isChatSelected = searchParams.get("chatId") === chatId;
+
   return (
     <div
-      className="flex p-2 hover:bg-gray-200 gap-2 items-center cursor-pointer"
+      className={cn(
+        "flex p-2 hover:bg-gray-200 gap-2 items-center cursor-pointer rounded-2xl",
+        {
+          "bg-gray-200": isChatSelected,
+        }
+      )}
       onClick={onUserClick}
     >
       <Image

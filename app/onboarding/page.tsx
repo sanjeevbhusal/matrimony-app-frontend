@@ -29,9 +29,11 @@ export default function Page() {
     age,
     currentProfession,
     highestEducation,
+    image,
   } = user;
 
   const onboardingCompleted = !!(
+    image &&
     bio &&
     currentAddress &&
     age &&
@@ -56,7 +58,9 @@ export default function Page() {
   }
 
   if (onboardingStep === 3) {
-    content = <ThirdOnboardingStep onSuccess={() => router.push("/home")} />;
+    // TODO: figure out why this line throws an error.
+    // content = <ThirdOnboardingStep onSuccess={() => router.push("/home")} />;
+    content = <ThirdOnboardingStep onSuccess={() => {}} />;
   }
 
   return (

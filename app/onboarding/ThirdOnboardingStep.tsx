@@ -14,6 +14,7 @@ import {
   thirdOnboardingStepSchema,
   ThirdOnboardingStepSchema,
 } from "@/lib/schema/ThirdOnboardingStepSchema";
+import { useUploadThing } from "@/lib/uploadthing";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useEffect } from "react";
@@ -27,10 +28,12 @@ function ThirdOnboardingStep({ onSuccess }: { onSuccess: () => void }) {
       highestEducation: "",
       currentProfession: "",
       currentAddress: "",
+      image: new File([], ""),
     },
   });
 
   const { user, fetchUser } = useAuth();
+  const { startUpload } = useUploadThing("imageUploader");
 
   useEffect(() => {
     if (user) {
@@ -53,8 +56,16 @@ function ThirdOnboardingStep({ onSuccess }: { onSuccess: () => void }) {
   }, [user, form]);
 
   async function onSubmit(values: ThirdOnboardingStepSchema) {
+    // lets add the image to upload thing url.
     try {
-      await axios.patch(`${API_URL}/users/${user?.id}`, values);
+      const fileUploadResponse = await startUpload([values.image]);
+      if (!fileUploadResponse) {
+        throw new Error("File upload failed");
+      }
+      await axios.patch(`${API_URL}/users/${user?.id}`, {
+        ...values,
+        image: fileUploadResponse[0].url,
+      });
       // refetch the user again
       await fetchUser();
       onSuccess();
@@ -63,6 +74,8 @@ function ThirdOnboardingStep({ onSuccess }: { onSuccess: () => void }) {
     } finally {
     }
   }
+
+  console.log(form.getValues());
 
   return (
     <main className="mx-auto border-red-500 xl:w-[35rem]">
@@ -129,6 +142,27 @@ function ThirdOnboardingStep({ onSuccess }: { onSuccess: () => void }) {
                 </FormItem>
               )}
             ></FormField>
+            <FormField
+              control={form.control}
+              name="image"
+              render={({ field }) => (
+                <FormItem className="mt-4">
+                  <FormLabel>Image</FormLabel>
+                  <FormControl>
+                    <Input
+                      accept=".jpg, .jpeg, .png, .svg,"
+                      type="file"
+                      onChange={(e) =>
+                        field.onChange(
+                          e.target.files ? e.target.files[0] : null
+                        )
+                      }
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <div className="mt-8">
               <Button
                 type="submit"

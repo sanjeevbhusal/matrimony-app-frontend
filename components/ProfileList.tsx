@@ -18,11 +18,14 @@ async function ProfileList({ profiles }: Props) {
           >
             <Link href={`/users/${profile.id}`}>
               <Image
-                src="https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"
+                src={
+                  profile.image ||
+                  "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"
+                }
                 alt="User Image"
                 height={200}
                 width={250}
-                className="rounded-lg w-full cursor-pointer"
+                className="rounded-lg w-full h-[274.97px] cursor-pointer"
               />
             </Link>
             <div className="">

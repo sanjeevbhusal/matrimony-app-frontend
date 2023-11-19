@@ -29,9 +29,11 @@ function hasCompletedOnboarding(user: User) {
     age,
     currentProfession,
     highestEducation,
+    image,
   } = user;
 
   const onboardingCompleted = !!(
+    image &&
     bio &&
     currentAddress &&
     age &&

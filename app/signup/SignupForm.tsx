@@ -40,11 +40,13 @@ export default function SignupForm() {
 
   async function onSubmit(values: SignupSchema) {
     try {
+      console.log("Signup successful");
       setLoading(true);
       await signup(values);
       router.push("/onboarding");
     } catch (e) {
       const error = e as AxiosError<any, any>;
+      console.log(error);
 
       const statusCode = error.response?.data.statusCode;
       switch (statusCode) {

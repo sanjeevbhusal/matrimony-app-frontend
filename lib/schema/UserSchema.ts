@@ -15,6 +15,10 @@ export const UserSchema = z.object({
   age: z.number().nullable(),
   facebookUrl: z.string().nullable(),
   instagramUrl: z.string().nullable(),
+  image: z.string().nullable(),
   chatIds: z.array(z.string()),
-  chats: z.array(chatSchema),
+  chats: z
+    .array(chatSchema)
+    .nullish()
+    .transform((val) => val ?? []),
 });

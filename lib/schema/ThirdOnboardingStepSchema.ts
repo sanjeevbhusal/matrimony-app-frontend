@@ -17,6 +17,10 @@ export const thirdOnboardingStepSchema = z.object({
     .trim()
     .min(1, "Current Profession cannot be empty"),
   currentAddress: z.string().trim().min(1, "Current Address cannot be empty"),
+  image: z.instanceof(File).refine((file) => {
+    if (!file.name) return false;
+    return true;
+  }, "Image is required"),
 });
 
 export type ThirdOnboardingStepSchema = z.infer<

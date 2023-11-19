@@ -17,7 +17,7 @@ import Link from "next/link";
 const navLinks = [
   {
     label: "All Profiles",
-    route: "/home",
+    route: "/all-profiles",
   },
   {
     label: "Liked Profiles",

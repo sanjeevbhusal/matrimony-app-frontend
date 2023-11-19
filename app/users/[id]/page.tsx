@@ -17,6 +17,10 @@ import { MdOutlineInterests } from "react-icons/md";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import LikeButton from "@/components/LikeButton";
+import getServerSession from "@/actions/getServerSession";
+import { cookies } from "next/headers";
+import UnlikeButton from "@/components/UnLikeButton";
 
 interface Props {
   params: {
@@ -28,7 +32,16 @@ export default async function Page({ params }: Props) {
   const response = await axios.get(`${API_URL}/users/${params.id}`);
   const user = response.data as User;
 
-  console.log(user);
+  const cookieStore = cookies();
+  const userId = cookieStore.get("userId");
+
+  const r = await axios.get(`${API_URL}/like?userId=${user.id}`, {
+    headers: {
+      Cookie: `userId=${userId?.value};`,
+    },
+  });
+
+  const like = r.data;
 
   return (
     <main className="min-h-screen flex flex-col px-6 md:px-10 lg:px-16 border-red-500">
@@ -81,6 +94,7 @@ export default async function Page({ params }: Props) {
           <h1 className="border p-2">{getCapitalizedString(user.bio || "")}</h1>
         </div>
       </div>
+      isLiked
       <div className="flex gap-2 mt-4">
         <h1 className="font-semibold">Social Links:</h1>
         {!user.facebookUrl && !user.instagramUrl ? (
@@ -100,6 +114,11 @@ export default async function Page({ params }: Props) {
           </div>
         )}
       </div>
+      {like ? (
+        <UnlikeButton user={user} likeId={like.id} />
+      ) : (
+        <LikeButton user={user} />
+      )}
       <Link href={`/chat/?userId=${user.id}`}>
         <Button className="w-fit mt-4">Chat With {user.firstName}</Button>
       </Link>

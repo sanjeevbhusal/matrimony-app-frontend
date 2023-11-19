@@ -7,6 +7,8 @@ async function getServerSession(): Promise<User | null> {
   const cookieStore = cookies();
   const userId = cookieStore.get("userId");
 
+  console.log({ userId });
+
   if (!userId) {
     return null;
   }

@@ -7,6 +7,7 @@ export default async function Layout({
   children: React.ReactNode;
 }) {
   const user = await getServerSession();
+  console.log({ user });
 
   if (user) {
     return redirect("/home");

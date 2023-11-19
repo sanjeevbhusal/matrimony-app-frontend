@@ -37,8 +37,8 @@ export default function LoginForm() {
     try {
       setLoading(true);
       await login(values);
-      const origin = searchParams.get("from") || "/dashboard";
-      // router.push(origin);
+      const origin = searchParams.get("from") || "/home";
+      router.push(origin);
     } catch (e) {
       const error = e as AxiosError<any, any>;
 

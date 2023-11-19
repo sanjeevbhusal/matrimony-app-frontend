@@ -10,11 +10,11 @@ interface Props {
 async function ProfileList({ profiles }: Props) {
   return (
     <div>
-      <div className="flex gap-6 flex-wrap">
+      <div className="flex gap-10 flex-wrap">
         {profiles.map((profile) => (
           <div
             key={profile.id}
-            className="flex flex-col basis-[calc(50%-12px)] md:basis-[calc(33.3%-16px)] lg:basis-[calc(25%-18px)] xl:basis-[calc(20%-19.2px)] 2xl:basis-[calc(16.6%-20px)]"
+            className="flex flex-col basis-full md:basis-[calc(50%-20px)] lg:basis-[calc(33.3%-26.6px)] xl:basis-[calc(25%-30px)] 2xl:basis-[calc(20%-32px)]"
           >
             <Link href={`/users/${profile.id}`}>
               <Image

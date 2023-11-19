@@ -39,7 +39,7 @@ export default async function Page({ params }: Props) {
           About {getUserFullName(user.firstName, user.lastName)}
         </h1>
         <Image
-          src="https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"
+          src={user.image!}
           alt="User Image"
           height={100}
           width={250}
@@ -101,7 +101,7 @@ export default async function Page({ params }: Props) {
         )}
       </div>
       <Link href={`/chat/?userId=${user.id}`}>
-        <Button className="w-fit mt-2">Chat With {user.firstName}</Button>
+        <Button className="w-fit mt-4">Chat With {user.firstName}</Button>
       </Link>
     </main>
   );

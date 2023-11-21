@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 
 interface Props {
   chatId: string;
+  messages: Message[];
 }
 
 interface Message {
@@ -20,17 +21,21 @@ interface Message {
   sentBy: string;
 }
 
-function ChatScreen({ chatId }: Props) {
-  // implement this in the backend
+function ChatScreen({ chatId, messages: existingMessages }: Props) {
   const [value, setValue] = useState("");
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(existingMessages);
   const { user } = useAuth();
 
   useEffect(() => {
+    setMessages([]);
     async function getMessages() {
       const response = await axios.get(`${API_URL}/messages?chatId=${chatId}`);
       const messages = response.data as Message[];
-      setMessages(messages);
+      for (let i = 0; i < 50; i++) {
+        console.log(i);
+        setMessages((prev) => [...prev, ...messages]);
+      }
+      // setMessages(messages);
     }
     getMessages();
   }, [chatId]);
@@ -44,13 +49,13 @@ function ChatScreen({ chatId }: Props) {
         sentBy: user?.id,
       });
       const message = response.data as Message;
-      setMessages([...messages, message]);
     }
   }
+  console.log(messages);
 
   return (
-    <div className="h-full p-2 ">
-      <div className="flex flex-col gap-4 pb-28 overflow-y-auto">
+    <div className="grow p-2 flex flex-col justify-between overflow-auto">
+      <div className="grow flex flex-col gap-4 pb-28 overflow-auto">
         {messages.map((message) => (
           <div
             className={cn("bg-gray-200 py-2 px-4 w-fit rounded-2xl", {
@@ -63,7 +68,7 @@ function ChatScreen({ chatId }: Props) {
         ))}
       </div>
 
-      <div className="fixed left-[179px] right-4 bottom-0 p-4 bg-white ">
+      <div className="p-4 bg-white ">
         <Textarea
           value={value}
           onChange={(e) => setValue(e.target.value)}

@@ -1,9 +1,12 @@
 import createChat from "@/actions/createChat";
 import getChatProfiles from "@/actions/getChatProfiles";
+import getProfiles from "@/actions/getProfiles";
 import getServerSession from "@/actions/getServerSession";
 import ChatScreen from "@/components/ChatScreen";
 import ChatUser from "@/components/ChatUser";
+import ChatBigScreen from "@/components/ChatbigScreen";
 import NavBar from "@/components/NavBar";
+import SearchUser from "@/components/SearchUser";
 import { Textarea } from "@/components/ui/textarea";
 import { API_URL } from "@/lib/constants";
 import { ChatWithUsers } from "@/lib/schema/ChatSchema";
@@ -17,6 +20,7 @@ interface PageProps {
   searchParams: {
     chatId: string;
     userId: string;
+    searchUser: string;
   };
 }
 
@@ -26,13 +30,14 @@ export default async function Page({ searchParams }: PageProps) {
   // const response = await axios.get(`${API_URL}/users`);
   // const users = response.data as User[];
   // const userId = searchParams.userId;
-  if (searchParams.userId) {
-    const response = await createChat(searchParams.userId);
-    console.log({ response });
-    if (!response) {
-      redirect(`/chat`);
-    }
-    redirect(`/chat?chatId=${response.id}`);
+  let profiles = [] as User[];
+
+  if (searchParams.searchUser) {
+    profiles = await getProfiles({
+      all: true,
+      searchTerm: searchParams.searchUser,
+    });
+    console.log(profiles, searchParams.searchUser);
   }
 
   const user = await getServerSession();
@@ -43,43 +48,58 @@ export default async function Page({ searchParams }: PageProps) {
   );
   const activeUser = activeChat?.users.find((u) => u.id !== user?.id) as User;
 
+  // Flex child's height is more than flex parent's height. Will the flex parent's height also increase. No
+  // Ideally, Flex child will shrink itself to ensure it is not greater than flex parent.
+
+  // If flex child's height is greater than flex parent, then flex child will shrink itself to fit the flex parent. How to achieve this ? By default, flex child will shrink itself to fit the flex parent. If it is not shrinking, then it is because of some other css property.
+
   return (
     <main className="h-screen flex flex-col gap-14">
       <div>
         <NavBar />
       </div>
-      <div className="flex-grow flex overflow-auto">
-        <div className="border-r flex flex-col gap-2 px-4 py-2">
-          {chatProfiles.map((chat) => (
-            <ChatUser
-              key={chat.id}
-              user={chat.users.find((u) => u.id !== user?.id) as User}
-              chatId={chat.id}
-            />
-          ))}
+      <div className="hidden lg:flex grow overflow-hidden">
+        <div className="border-r flex flex-col gap-2 px-4 py-4 w-64 overflow-auto ">
+          <SearchUser />
+          {chatProfiles.length > 0 ? (
+            <div className="flex flex-col gap-4">
+              {chatProfiles.map((chat) => (
+                <ChatUser
+                  key={chat.id}
+                  user={chat.users.find((u) => u.id !== user?.id) as User}
+                  chatId={chat.id}
+                />
+              ))}
+            </div>
+          ) : (
+            <p className="font-bold mt-2">
+              You have no Chats. Click on a user profile to create a chat{" "}
+            </p>
+          )}
+
+          {profiles.length > 0 ? (
+            <div className="border-t">
+              <p className="text-sm text-neutral-500 my-4">
+                These are users who you have not contacted yet
+              </p>
+              <div className="flex flex-col gap-4">
+                {profiles.map((profile) => (
+                  <ChatUser key={profile.id} user={profile} chatId={"1212"} />
+                ))}
+              </div>
+            </div>
+          ) : null}
         </div>
 
-        {activeUser ? (
-          <div className="flex-grow flex flex-col h-full">
-            <div className="px-2 py-4 border-b flex items-center gap-4">
-              <Image
-                src="https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"
-                alt="User Image"
-                height={32}
-                width={32}
-                className="rounded-full w-8 h-8"
-              />
-              <p>
-                {activeUser.firstName} {activeUser.lastName}
-              </p>
-              <p></p>
-              {/* Chat Information */}
-            </div>
-            <div className=" h-full overflow-y-auto">
-              <ChatScreen chatId={searchParams.chatId} />
-            </div>
-          </div>
+        {searchParams.chatId ? (
+          <ChatBigScreen chatId={searchParams.chatId} />
         ) : null}
+      </div>
+      <div className="lg:hidden flex grow justify-center items-center px-8 font-bold">
+        <p>
+          Chat Feature is currently not available in Mobile Devices. Please
+          switch to Desktop/Laptop to use this feature.
+        </p>
       </div>
     </main>
   );

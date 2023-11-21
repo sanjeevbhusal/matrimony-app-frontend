@@ -4,6 +4,8 @@ import { User } from "@/lib/types";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { cn, getUserFullName } from "@/lib/utils";
+import axios from "axios";
+import { API_URL } from "@/lib/constants";
 
 interface ChatUserProps {
   user: User;
@@ -15,7 +17,36 @@ function ChatUser({ user, chatId }: ChatUserProps) {
   const router = useRouter();
   const pathName = usePathname();
 
-  function onUserClick() {
+  async function getChatId() {
+    try {
+      const response = await axios.get(`${API_URL}/chats?userId=${user.id}`, {
+        withCredentials: true,
+      });
+      const existingChatId = response.data[0]?.id;
+      if (existingChatId) {
+        return existingChatId;
+      }
+
+      const r = await axios.post(
+        `${API_URL}/chats`,
+        {
+          userId: user.id,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      const newChatId = r.data.id;
+      return newChatId;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function onUserClick() {
+    // create chat Id
+    let chatId = await getChatId();
+
     const params = new URLSearchParams(searchParams);
     params.set("chatId", chatId);
 

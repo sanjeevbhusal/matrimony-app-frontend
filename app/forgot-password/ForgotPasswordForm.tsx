@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import {
   forgotPasswordSchema,
   ForgotPasswordSchema,
-} from "@/lib/schema/forgotPasswordSchema";
+} from "@/lib/schema/forgetPasswordSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";

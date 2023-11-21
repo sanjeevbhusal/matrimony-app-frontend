@@ -14,6 +14,15 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { RxHamburgerMenu } from "react-icons/rx";
 
 const navLinks = [
   {
@@ -27,6 +36,10 @@ const navLinks = [
   {
     label: "Liked Profiles",
     route: "/liked-profiles",
+  },
+  {
+    label: "Chat",
+    route: "/chat",
   },
 ];
 
@@ -61,7 +74,7 @@ function NavBar() {
         </div>
       ) : (
         <div className="flex items-center gap-8">
-          <div className="flex gap-2">
+          <div className="gap-2 hidden md:flex">
             {navLinks.map((link) => (
               <Link href={link.route} key={link.label}>
                 <Button
@@ -76,8 +89,44 @@ function NavBar() {
                 </Button>
               </Link>
             ))}
+            <Button variant="ghost" onClick={() => logout()}>
+              Logout
+            </Button>
           </div>
-          <DropdownMenu>
+          <Sheet>
+            <SheetTrigger className="md:hidden">
+              <div className="py-2">
+                <RxHamburgerMenu className="" size={22} />
+              </div>
+            </SheetTrigger>
+            <SheetContent>
+              <div className="gap-2 flex flex-col">
+                {navLinks.map((link) => (
+                  <Link href={link.route} key={link.label}>
+                    <Button
+                      variant="ghost"
+                      className={cn("w-full justify-start", {
+                        "text-blue-500 hover:text-blue-600": pathname.includes(
+                          link.route
+                        ),
+                      })}
+                    >
+                      {link.label}
+                    </Button>
+                  </Link>
+                ))}
+                <Button
+                  variant="ghost"
+                  onClick={() => logout()}
+                  className="justify-start"
+                >
+                  Logout
+                </Button>
+              </div>
+            </SheetContent>
+          </Sheet>
+
+          {/* <DropdownMenu>
             <DropdownMenuTrigger>
               <Avatar>
                 <AvatarImage src="https://github.com/shadcn.png" />
@@ -92,7 +141,7 @@ function NavBar() {
                 Logout
               </DropdownMenuItem>
             </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenu> */}
         </div>
       )}
     </div>

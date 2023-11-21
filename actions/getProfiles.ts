@@ -5,7 +5,7 @@ import { User } from "@/lib/types";
 import { cookies } from "next/headers";
 
 async function getProfiles(options?: { all?: boolean }) {
-  const user = getServerSession();
+  const user = await getServerSession();
   if (!user) {
     throw new Error("User not found");
   }

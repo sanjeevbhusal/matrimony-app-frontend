@@ -44,7 +44,7 @@ export default async function Page({ params }: Props) {
   const like = r.data;
 
   return (
-    <main className="min-h-screen flex flex-col px-6 md:px-10 lg:px-16 border-red-500">
+    <main className="min-h-screen flex flex-col px-6 md:px-10 lg:px-16 border-red-50 mb-20">
       {/* Dashboard page */}
       <NavBar />
       <div className="mt-20 flex flex-col">
@@ -94,7 +94,7 @@ export default async function Page({ params }: Props) {
           <h1 className="border p-2">{getCapitalizedString(user.bio || "")}</h1>
         </div>
       </div>
-      isLiked
+
       <div className="flex gap-2 mt-4">
         <h1 className="font-semibold">Social Links:</h1>
         {!user.facebookUrl && !user.instagramUrl ? (

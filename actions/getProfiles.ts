@@ -4,7 +4,7 @@ import { API_URL } from "@/lib/constants";
 import { User } from "@/lib/types";
 import { cookies } from "next/headers";
 
-async function getProfiles(options?: { all?: boolean }) {
+async function getProfiles(options?: { all?: boolean; searchTerm?: string }) {
   const user = await getServerSession();
   if (!user) {
     throw new Error("User not found");
@@ -17,11 +17,14 @@ async function getProfiles(options?: { all?: boolean }) {
     throw new Error("User not found");
   }
 
-  const response = await axios.get(`${API_URL}/users?all=${options?.all}`, {
-    headers: {
-      Cookie: `userId=${userId.value};`,
-    },
-  });
+  const response = await axios.get(
+    `${API_URL}/users?all=${options?.all}&searchTerm=${options?.searchTerm}`,
+    {
+      headers: {
+        Cookie: `userId=${userId.value};`,
+      },
+    }
+  );
   const users = response.data as User[];
   return users;
 }

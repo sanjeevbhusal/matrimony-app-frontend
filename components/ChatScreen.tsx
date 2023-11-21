@@ -26,18 +26,23 @@ function ChatScreen({ chatId, messages: existingMessages }: Props) {
   const [messages, setMessages] = useState<Message[]>(existingMessages);
   const { user } = useAuth();
 
+  async function getMessages() {
+    const response = await axios.get(`${API_URL}/messages?chatId=${chatId}`);
+    const messages = response.data as Message[];
+    setMessages(messages);
+  }
+
   useEffect(() => {
     setMessages([]);
-    async function getMessages() {
-      const response = await axios.get(`${API_URL}/messages?chatId=${chatId}`);
-      const messages = response.data as Message[];
-      for (let i = 0; i < 50; i++) {
-        console.log(i);
-        setMessages((prev) => [...prev, ...messages]);
-      }
-      // setMessages(messages);
-    }
+    // fetch the message immediately.
     getMessages();
+
+    // fetch messages every 1 second.
+    const intervalId = setInterval(getMessages, 1000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
   }, [chatId]);
 
   async function sendMessage(event: KeyboardEvent<HTMLTextAreaElement>) {

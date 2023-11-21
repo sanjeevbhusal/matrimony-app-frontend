@@ -10,6 +10,7 @@ import { z } from "zod";
 import { User } from "../types";
 import { LoginSchema } from "../schema/loginSchema";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface AuthContext {
   user: User | null;
@@ -24,6 +25,7 @@ const AuthContext = createContext<AuthContext | null>(null);
 function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<null | User>(null);
   const [fetchedUserAtLoad, setFetchedUserAtLoad] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     fetchUser();
@@ -69,10 +71,12 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function logout() {
-    await axios.post(`${API_URL}/authentication/logout`, {
-      withCredentials: true,
-    });
-    setUser(null);
+    // await axios.post(`${API_URL}/authentication/logout`, {
+    //   withCredentials: true,
+    // });
+    document.cookie = "userId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    router.push("/login");
+    setTimeout(() => setUser(null), 500);
   }
 
   const value = {

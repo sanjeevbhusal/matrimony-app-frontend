@@ -16,6 +16,10 @@ export default async function Page() {
         <h3 className="font-bold text-2xl">
           Profiles You might be Interested In
         </h3>
+        <p className="text-sm text-neutral-500 mt-2">
+          Based upon your profile, Our algorithm found that you might be
+          interested in these following profiles
+        </p>
         <div className="mt-8">
           <ProfileList
             profiles={profiles.filter((profile) => profile.id !== session?.id)}

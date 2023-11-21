@@ -28,12 +28,19 @@ function LikeButton({ user }: { user: User }) {
   }
 
   return (
-    <Button
-      className="w-fit mt-4 bg-green-500 hover:bg-green-600"
-      onClick={likeUser}
-    >
-      Like {user.firstName}
-    </Button>
+    <div>
+      <Button
+        className="w-fit mt-4 bg-green-500 hover:bg-green-600"
+        onClick={likeUser}
+      >
+        Like {user.firstName}
+      </Button>
+      <p className="text-sm text-neutral-500 mt-2">
+        When you like someone, their profile appears in the{" "}
+        <strong>Liked Profiles </strong>
+        section. You can unlike them anytime you want.
+      </p>
+    </div>
   );
 }
 
